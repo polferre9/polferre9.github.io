@@ -50,7 +50,8 @@ button {
     margin-top: 1rem;
     padding: 0.5rem 1rem;
     background-color: #1e90ff;
-    color: white;
+    color: red;
     border: none;
     cursor: pointer;
+
 }
