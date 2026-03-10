@@ -1,58 +1,238 @@
+/* Fonts */
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('../fonts/PressStart2P-Regular.ttf') format('truetype');
+}
+
+/* Body general */
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #0F172A;
+    color: #FFBE0B;
+    text-align: center;
+}
+
+/* Títols */
+h1, h2, h3 {
+    font-family: 'Press Start 2P', cursive;
+    color: #FFBE0B;
+    text-shadow:
+        -2px -2px 0 #000,  
+         2px -2px 0 #000,  
+        -2px  2px 0 #000,  
+         2px  2px 0 #000,  
+         0 0 10px #FFBE0B,
+         0 0 20px #FFBE0B;
+    margin-top: 30px;
+}
+
+/* Header i menú */
+/* ---------------------------- */
+/* 1️⃣ Carregar font local       */
+/* ---------------------------- */
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('../fonts/PressStart2P-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* ---------------------------- */
+/* 2️⃣ Fons i text general       */
+/* ---------------------------- */
+body{
     margin:0;
+    font-family:'Roboto', sans-serif;
+    background:#0F172A;  /* fosc modern */
+    color:#FFBE0B;        /* tot el text groc energia */
+    text-align:center;
+}
+
+/* ---------------------------- */
+/* 3️⃣ Títols del joc amb borde negre i glow groc */
+/* ---------------------------- */
+h1, h2, h3 {
+    font-family:'Press Start 2P', cursive;
+    color:#FFBE0B; /* groc energia */
+    margin-top:40px;
+
+    /* Contorn negre + glow groc */
+    text-shadow:
+        -2px -2px 0 #000,  
+         2px -2px 0 #000,  
+        -2px  2px 0 #000,  
+         2px  2px 0 #000,  
+         0 0 10px #FFBE0B,
+         0 0 20px #FFBE0B;
+}
+
+/* ---------------------------- */
+/* 4️⃣ Header i menú             */
+/* ---------------------------- */
+header{
+    background:#8338EC; /* morat secundari */
+    padding:30px;
+}
+
+nav ul{
+    list-style:none;
     padding:0;
 }
 
-header {
-    background-color: #1e90ff;
-    color: white;
-    padding: 1rem;
+nav li{
+    display:inline-block;
+    margin:20px;
+}
+
+/* ---------------------------- */
+/* 5️⃣ Botons estil aventura      */
+/* ---------------------------- */
+nav a{
+    font-family:'Press Start 2P', cursive;
+    font-size:14px;
+
+    background:linear-gradient(#3A86FF,#265dd8); /* blau degradat */
+    color:#FFBE0B; /* groc energia */
+    padding:20px 35px;
+    border-radius:12px;
+    text-decoration:none;
+    border:3px solid #FFBE0B;
+    box-shadow:0 6px 0 #1d4ed8, 0 0 15px #3A86FF;
+    transition:0.2s;
+}
+
+nav a:hover{
+    transform:translateY(-4px) scale(1.05);
+    box-shadow:0 10px 0 #1d4ed8, 0 0 20px #3A86FF;
+}
+
+nav a:active{
+    transform:translateY(4px);
+    box-shadow:0 3px 0 #1d4ed8;
+}
+
+/* ---------------------------- */
+/* 6️⃣ Main i seccions           */
+/* ---------------------------- */
+main{
+    padding:40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;  /* centra horitzontal */
+    text-align:center;
+}
+
+/* ---------------------------- */
+/* Contenidor del joc            */
+/* ---------------------------- */
+#game-container{
+    width:800px;
+    height:600px;
+    background:#000;   
+    border: 4px solid #FFBE0B; /* contorn groc energia */
+    box-shadow: 0 0 20px #FFBE0B, 0 0 40px #FFBE0B; /* glow groc */
+    margin:20px 0;
+}
+
+/* ---------------------------- */
+/* 7️⃣ Footer                     */
+/* ---------------------------- */
+footer{
+    background:#8338EC; /* morat secundari */
+    padding:20px;
+    color:#FFBE0B; /* text groc energia */
+}
+
+/* ---------------------------- */
+/* 8️⃣ Formularis (si hi ha)     */
+/* ---------------------------- */
+form label{
+    display:block;
+    margin-top:20px;
+    color:#FFBE0B;
+}
+
+form input{
+    display:block;
+    margin-top:10px;
+    padding:10px;
+    color:#FFBE0B;
+    background:#0F172A;
+    border:2px solid #FFBE0B;
+    border-radius:5px;
+}
+
+/* ---------------------------- */
+/* 9️⃣ Botons generals (formularis etc) */
+/* ---------------------------- */
+button{
+    font-family:'Press Start 2P', cursive;
+    font-size:14px;
+    padding:15px 25px;
+    background-color:#3A86FF;
+    color:#FFBE0B;
+    border:3px solid #FFBE0B;
+    border-radius:12px;
+    box-shadow:0 6px 0 #1d4ed8, 0 0 10px #3A86FF;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:translateY(-4px) scale(1.05);
+    box-shadow:0 10px 0 #1d4ed8, 0 0 20px #3A86FF;
+    background-color:#FFBE0B;
+    color:#0F172A;
+}
+
+button:active{
+    transform:translateY(4px);
+    box-shadow:0 3px 0 #1d4ed8;
+}
+
+/* ---------------------------- */
+/* 🔟 Blocs d'imatges centrats amb ressalt groc */
+/* ---------------------------- */
+.image-block {
+    margin: 30px 0;
     text-align: center;
+    background: rgba(255, 190, 11, 0.1); /* lleuger fons groc */
+    padding: 15px;
+    border: 3px solid #FFBE0B;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #FFBE0B;
 }
 
-nav ul {
-    list-style: none;
-    padding: 0;
+.image-block img {
+    display: block;       
+    margin: 15px auto 0 auto; 
+    max-width: 100%;
+    height: auto;
+    border: 4px solid #FFBE0B;  
+    box-shadow: 0 0 15px #FFBE0B;
 }
 
-nav li {
-    display: inline;
-    margin: 0 1rem;
+.image-block h3 {
+    margin-top:0;
+    font-family: 'Press Start 2P', cursive;
+    color: #FFBE0B;
+    text-shadow:
+        -2px -2px 0 #000,  
+         2px -2px 0 #000,  
+        -2px  2px 0 #000,  
+         2px  2px 0 #000,
+         0 0 10px #FFBE0B,
+         0 0 20px #FFBE0B;
 }
 
-nav a {
-    color: white;
-    text-decoration: none;
+.image-block p {
+    color: #FFBE0B;
+    text-shadow:
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
+    max-width: 700px;
+    margin: 5px auto 15px auto;
 }
-
-main {
-    padding: 2rem;
-}
-
-footer {
-    text-align: center;
-    padding: 1rem;
-    background-color: #eee;
-}
-
-form label {
-    display: block;
-    margin-top: 1rem;
-}
-
-form input {
-    display: block;
-    margin-top: 0.5rem;
-}
-
-button {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #1e90ff;
-    color: white;
-    border: none;
-    cursor: pointer;
-
-}
-
