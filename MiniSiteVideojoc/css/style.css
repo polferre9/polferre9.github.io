@@ -9,10 +9,11 @@
 /* Cos i fons */
 body {
     margin:0;
-    font-family:'Roboto', sans-serif;
+    font-family:'Roboto', sans-serif; /* Text normal amb Roboto */
     background:#0F172A;
     color:#FFBE0B;
     text-align:center;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* contorn negre per text normal */
 }
 
 /* ---------------------------- */
@@ -126,7 +127,7 @@ form label {
     text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
 }
 
-form input {
+form input, form textarea {
     display:block;
     margin-top:10px;
     padding:10px;
@@ -136,9 +137,10 @@ form input {
     border-radius:5px;
     box-shadow:0 0 10px #FFBE0B;
     transition: all 0.3s ease;
+    text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000; /* contorn negre text formulari */
 }
 
-form input:focus {
+form input:focus, form textarea:focus {
     outline:none;
     border-color:#FFBE0B;
     box-shadow:0 0 20px #FFBE0B,0 0 40px #FFBE0B;
