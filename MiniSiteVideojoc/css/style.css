@@ -1,17 +1,13 @@
 /* ---------------------------- */
-/* 1️⃣ Carregar font local       */
-/* ---------------------------- */
+/* Fonts */
 @font-face {
     font-family: 'Press Start 2P';
     src: url('../fonts/PressStart2P-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
 }
 
 /* ---------------------------- */
-/* 2️⃣ Fons i text general       */
-/* ---------------------------- */
-body{
+/* Cos i fons */
+body {
     margin:0;
     font-family:'Roboto', sans-serif;
     background:#0F172A;
@@ -20,29 +16,8 @@ body{
 }
 
 /* ---------------------------- */
-/* Espai entre títol i menú     */
-/* ---------------------------- */
-header h1{
-    margin-bottom:35px;
-    color:#FFBE0B;
-    text-shadow:
-        -2px -2px 0 #000,
-         2px -2px 0 #000,
-        -2px  2px 0 #000,
-         2px  2px 0 #000,
-         0 0 10px #FFBE0B,
-         0 0 20px #FFBE0B;
-}
-
-header nav ul{
-    padding-top:15px;
-    margin:0;
-}
-
-/* ---------------------------- */
-/* 3️⃣ Titols del joc            */
-/* ---------------------------- */
-h1, h2, h3{
+/* Títols */
+h1, h2, h3 {
     font-family:'Press Start 2P', cursive;
     color:#FFBE0B;
     margin-top:40px;
@@ -55,82 +30,67 @@ h1, h2, h3{
          0 0 20px #FFBE0B;
 }
 
-/* ---------------------------- */
-/* 4️⃣ Header i menú             */
-/* ---------------------------- */
-header{
+/* Header i menú */
+header {
     background:#8338EC;
     padding:30px;
 }
 
-nav ul{
-    list-style:none;
-    padding:0;
+header h1 {
+    margin-bottom:35px;
 }
 
-nav li{
+nav ul {
+    padding:0;
+    list-style:none;
+    padding-top:15px;
+}
+
+nav li {
     display:inline-block;
     margin:20px;
 }
 
 /* ---------------------------- */
-/* 5️⃣ Botons menú i enviar      */
-/* ---------------------------- */
+/* Botons menú i enviar */
 nav a, button {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 14px;
-    padding: 15px 25px;
-    background-color: #3A86FF;
-    color: #FFBE0B;
-    border: 3px solid #FFBE0B;
-    border-radius: 12px;
-    text-decoration: none;
-    box-shadow:
-        0 6px 0 #1d4ed8,
-        0 0 10px #3A86FF,
-        0 0 20px #FFBE0B,
-        inset 0 0 15px rgba(255,255,255,0.2);
-    cursor: pointer;
-    display: inline-block;
+    font-family:'Press Start 2P', cursive;
+    font-size:14px;
+    padding:15px 25px;
+    background:#3A86FF;
+    color:#FFBE0B;
+    border:3px solid #FFBE0B;
+    border-radius:12px;
+    text-decoration:none;
+    box-shadow:0 6px 0 #1d4ed8,0 0 10px #3A86FF,0 0 20px #FFBE0B,inset 0 0 15px rgba(255,255,255,0.2);
+    cursor:pointer;
+    display:inline-block;
     transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+    text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
 }
 
-/* Hover */
 nav a:hover, button:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow:
-        0 10px 0 #1d4ed8,
-        0 0 20px #3A86FF,
-        0 0 35px #FFBE0B,
-        inset 0 0 25px rgba(255,255,255,0.3);
-    background-color: #FFBE0B;
-    color: #0F172A;
+    transform:translateY(-4px) scale(1.05);
+    box-shadow:0 10px 0 #1d4ed8,0 0 20px #3A86FF,0 0 35px #FFBE0B,inset 0 0 25px rgba(255,255,255,0.3);
+    background-color:#FFBE0B;
+    color:#0F172A;
 }
 
-/* Active (clic) */
 nav a:active, button:active {
-    transform: translateY(4px);
-    box-shadow:
-        0 3px 0 #1d4ed8,
-        0 0 15px #FFBE0B,
-        inset 0 0 15px rgba(255,255,255,0.2);
+    transform:translateY(4px);
+    box-shadow:0 3px 0 #1d4ed8,0 0 15px #FFBE0B,inset 0 0 15px rgba(255,255,255,0.2);
 }
 
-/* Menú actiu (pàgina actual) */
 nav a.active {
-    background-color: #FFBE0B;
-    color: #0F172A;
-    box-shadow:
-        0 10px 0 #1d4ed8,
-        0 0 20px #3A86FF,
-        0 0 35px #FFBE0B,
-        inset 0 0 25px rgba(255,255,255,0.3);
+    background-color:#FFBE0B;
+    color:#C084FC;
+    box-shadow:0 10px 0 #1d4ed8,0 0 20px #3A86FF,0 0 35px #FFBE0B,inset 0 0 25px rgba(255,255,255,0.3);
+    text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000;
 }
 
 /* ---------------------------- */
-/* 6️⃣ Main                      */
-/* ---------------------------- */
-main{
+/* Main */
+main {
     padding:40px;
     display:flex;
     flex-direction:column;
@@ -138,43 +98,35 @@ main{
     text-align:center;
 }
 
-/* ---------------------------- */
-/* Contenidor del joc            */
-/* ---------------------------- */
-#game-container{
+/* Contenidor joc */
+#game-container {
     width:800px;
     max-width:90%;
     height:600px;
     background:#000;
     border:4px solid #FFBE0B;
-    box-shadow:0 0 20px #FFBE0B, 0 0 40px #FFBE0B;
+    box-shadow:0 0 20px #FFBE0B,0 0 40px #FFBE0B;
     margin:20px 0;
 }
 
-/* ---------------------------- */
-/* 7️⃣ Footer                    */
-/* ---------------------------- */
-footer{
+/* Footer */
+footer {
     background:#8338EC;
-    padding:20px;
+    padding:25px;
     color:#FFBE0B;
+    font-size:16px;
+    text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
 }
 
-/* ---------------------------- */
-/* 8️⃣ Formulari                  */
-/* ---------------------------- */
-form label{
+/* Formulari */
+form label {
     display:block;
     margin-top:20px;
     color:#FFBE0B;
-    text-shadow:
-        -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
+    text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
 }
 
-form input{
+form input {
     display:block;
     margin-top:10px;
     padding:10px;
@@ -187,16 +139,14 @@ form input{
 }
 
 form input:focus {
-    outline: none;
-    border-color: #FFBE0B;
-    box-shadow: 0 0 20px #FFBE0B, 0 0 40px #FFBE0B;
-    background: rgba(15,23,42,0.9);
+    outline:none;
+    border-color:#FFBE0B;
+    box-shadow:0 0 20px #FFBE0B,0 0 40px #FFBE0B;
+    background:rgba(15,23,42,0.9);
 }
 
-/* ---------------------------- */
-/* 9️⃣ Blocs d'imatges i hover    */
-/* ---------------------------- */
-.image-block{
+/* Imatges i hover */
+.image-block {
     margin:30px 0;
     text-align:center;
     background:rgba(255,190,11,0.1);
@@ -206,9 +156,9 @@ form input:focus {
     box-shadow:0 0 10px #FFBE0B;
 }
 
-.image-block img{
+.image-block img {
     display:block;
-    margin:15px auto 0 auto;
+    margin:15px auto 0;
     max-width:100%;
     height:auto;
     border:4px solid #FFBE0B;
@@ -216,22 +166,15 @@ form input:focus {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.image-block img:hover{
-    transform: scale(1.1);
-    box-shadow: 0 0 25px #FFBE0B, 0 0 50px #FFBE0B;
+.image-block img:hover {
+    transform:scale(1.1);
+    box-shadow:0 0 25px #FFBE0B,0 0 50px #FFBE0B;
 }
 
-.image-block h3{
-    margin-top:0;
-}
-
-.image-block p{
+.image-block h3 {margin-top:0;}
+.image-block p {
     color:#FFBE0B;
-    text-shadow:
-        -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
+    text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
     max-width:700px;
     margin:5px auto 15px auto;
 }
@@ -249,85 +192,29 @@ form input:focus {
     height:auto;
 }
 
-/* ---------------------------- */
-/* Titols específics per versió mòbil */
-/* ---------------------------- */
-.desktop-title {
-    display: block; /* visible per defecte a web */
+/* Titols mòbil/desktop */
+.desktop-title {display:block;}
+.mobile-title {display:none;}
+
+/* Responsive */
+@media (max-width:1024px) {
+    #game-container {width:90%; height:auto;}
 }
 
-.mobile-title {
-    display: none; /* amagat per defecte */
+@media (max-width:768px) {
+    main {padding:20px;}
+    nav li {margin:10px 5px;}
+    #game-container {width:95%; height:auto; margin:20px auto;}
+    .image-block img {max-width:100%; height:auto;}
+    .controls-images {flex-direction:column; align-items:center;}
+    .controls-images img {width:120px; margin:10px 0;}
+    .desktop-title {display:none;}
+    .mobile-title {display:block; font-size:18px; margin-bottom:15px;}
 }
 
-/* ---------------------------- */
-/* Responsive mòbil i tauleta */
-/* ---------------------------- */
-@media (max-width: 1024px) {
-    #game-container {
-        width:90%;
-        height:auto;
-    }
-}
-
-@media (max-width: 768px) {
-    main {
-        padding:20px;
-    }
-
-    nav li {
-        display:inline-block;
-        margin:10px 5px;
-    }
-
-    #game-container {
-        width:95%;
-        height:auto;
-        margin:20px auto;
-    }
-
-    .image-block img {
-        max-width:100%;
-        height:auto;
-    }
-
-    .controls-images {
-        flex-direction:column;
-        align-items:center;
-    }
-
-    .controls-images img {
-        width:120px;
-        margin:10px 0;
-    }
-
-    /* Mostra el títol mòbil */
-    .desktop-title {
-        display: none;
-    }
-    .mobile-title {
-        display: block;
-        font-size: 18px; /* lleugerament més petit */
-        margin-bottom: 15px;
-        text-align: center;
-    }
-}
-
-@media (max-width: 480px) {
-    h1, h2, h3 {
-        font-size:16px;
-    }
-
-    nav a, button {
-        font-size:12px;
-        padding:10px 15px;
-    }
-
-    main {
-        padding:10px;
-    }
-
-    .image-block p {
-        max-width:90%;
-    }
+@media (max-width:480px) {
+    h1,h2,h3 {font-size:16px;}
+    nav a,button {font-size:12px; padding:10px 15px;}
+    main {padding:10px;}
+    .image-block p {max-width:90%;}
 }
