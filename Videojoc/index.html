@@ -13,6 +13,17 @@
 <script>
 var W = 800, H = 500;
 var scoreGlobal = 0;
+document.getElementById("left").addEventListener("touchstart", () => {
+    player.setVelocityX(-200);
+});
+
+document.getElementById("right").addEventListener("touchstart", () => {
+    player.setVelocityX(200);
+});
+
+document.getElementById("jump").addEventListener("touchstart", () => {
+    player.setVelocityY(-400);
+});
  
 // ─────────────────────────────────────────────
 // BOOT
