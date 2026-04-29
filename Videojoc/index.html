@@ -13,7 +13,7 @@
 <script>
 var W = 800, H = 500;
 var scoreGlobal = 0;
-
+ 
 // ─────────────────────────────────────────────
 // BOOT
 // ─────────────────────────────────────────────
@@ -507,7 +507,7 @@ class Level2Scene extends Phaser.Scene {
     if (this.dead) return;
     this.dead = true; this.physics.pause();
     this.player.setTint(0x4444ff);
-    this.mostrarMissatge("Has caigut al buit! Un altre cop serà!\nPunts: "+scoreGlobal, function() {
+    this.mostrarMissatge("Has caigut al buit! Un altre cop serà!\nUn altre cop serà! \uD83D\uDE05\nPunts: "+scoreGlobal, function() {
       this.scene.start('GameOverScene',{guanyat:false,punts:scoreGlobal,missatge:'buit'});
     });
   }
