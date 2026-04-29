@@ -121,6 +121,14 @@ main {
     border:none;
     display:block;
 }
+#game-container iframe {
+    width:100%;
+    height:100%;
+    border:none;
+}
+#game-container {
+    border:4px solid #FFBE0B;
+}
 /* Footer */
 footer {
     background:#8338EC;
