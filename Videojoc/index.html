@@ -507,7 +507,7 @@ class Level2Scene extends Phaser.Scene {
     if (this.dead) return;
     this.dead = true; this.physics.pause();
     this.player.setTint(0x4444ff);
-    this.mostrarMissatge("Has caigut al buit!\nProfe... m'has d'aprovar! \uD83D\uDE05\nPunts: "+scoreGlobal, function() {
+    this.mostrarMissatge("Has caigut al buit!\nUn altre cop serà! \uD83D\uDE05\nPunts: "+scoreGlobal, function() {
       this.scene.start('GameOverScene',{guanyat:false,punts:scoreGlobal,missatge:'buit'});
     });
   }
@@ -546,7 +546,7 @@ class GameOverScene extends Phaser.Scene {
       fontFamily:'monospace',stroke:'#000',strokeThickness:6
     }).setOrigin(0.5);
     var subtext = this.guanyat ? 'Has completat els dos nivells!'
-      : (this.missatge==='buit' ? "Profe... m'has d'aprovar! \uD83D\uDE05" : 'Has tocat una bomba...');
+      : (this.missatge==='buit' ? "Un altre cop serà!! \uD83D\uDE05" : 'Has tocat una bomba...');
     this.add.text(W/2,215,subtext,{fontSize:'18px',fill:'#aaaacc',fontFamily:'monospace'}).setOrigin(0.5);
     this.add.text(W/2,268,'Puntuaci\u00f3: '+this.punts,{
       fontSize:'28px',fill:'#ffdd44',fontFamily:'monospace',stroke:'#443300',strokeThickness:4
