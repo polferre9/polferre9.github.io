@@ -393,7 +393,7 @@ class Level1Scene extends Phaser.Scene {
     this.dead = true;
     this.physics.pause();
     this.player.setTint(0x4444ff);
-    this.mostrarMissatge("Has caigut al buit!\nProfe... m'has d'aprovar! \uD83D\uDE05\nPunts: "+scoreGlobal, function() {
+    this.mostrarMissatge("Has caigut al buit!\nUn altre cop serà! \uD83D\uDE05\nPunts: "+scoreGlobal, function() {
       this.scene.start('GameOverScene',{guanyat:false,punts:scoreGlobal,missatge:'buit'});
     });
   }
