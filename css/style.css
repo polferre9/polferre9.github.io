@@ -155,6 +155,7 @@ form input:focus, form textarea:focus {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 .image-block img {
     display:block;
     margin:15px auto 0;
@@ -179,6 +180,18 @@ form input:focus, form textarea:focus {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+=======
+.image-block img, .image-block video {
+    display: block;
+    margin: 15px auto 0;
+    max-width: 100%;
+    height: auto;
+    border: 4px solid #FFBE0B;
+    box-shadow: 0 0 15px #FFBE0B;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+>>>>>>> Stashed changes
 .image-block img:hover, .image-block video:hover {
     transform: scale(1.1);
     box-shadow: 0 0 25px #FFBE0B, 0 0 50px #FFBE0B;
@@ -186,6 +199,9 @@ form input:focus, form textarea:focus {
 
 .image-block h3 {
     margin-top: 0;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 
