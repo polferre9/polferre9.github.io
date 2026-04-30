@@ -6,15 +6,11 @@
     <title>Contacte</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <script src="js/contacte.js" defer></script>
 </head>
 <body>
     <header>
-        <!-- Títol web (visible per defecte) -->
         <h1 class="desktop-title"><-------C O N T A C T E-------></h1>
-        <!-- Títol mòbil (visible només en pantalles petites) -->
         <h1 class="mobile-title">C O N T A C T E</h1>
-
         <nav>
             <ul>
                 <li><a href="index.html">Inici</a></li>
@@ -25,11 +21,16 @@
     </header>
 
     <main>
-        <form id="form-contacte">
+        <form action="https://formspree.io/f/xdabnroq" method="POST">
             <label for="nom">Nom:</label>
-            <input type="text" id="nom" required>
+            <input type="text" id="nom" name="nom" required>
+
             <label for="email">Correu electrònic:</label>
-            <input type="email" id="email" required> <br>
+            <input type="email" id="email" name="email" required>
+
+            <label for="missatge">Missatge:</label>
+            <textarea id="missatge" name="missatge" rows="5" required></textarea>
+            <br>
             <button type="submit">Enviar</button>
         </form>
     </main>
