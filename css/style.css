@@ -177,7 +177,7 @@ form input:focus, form textarea:focus {
     box-shadow:0 0 10px #FFBE0B;
 }
 
-.image-block img {
+.image-block img, .image-block video {
     display:block;
     margin:15px auto 0;
     max-width:100%;
@@ -187,7 +187,7 @@ form input:focus, form textarea:focus {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.image-block img:hover {
+.image-block img:hover, .image-block video:hover {
     transform:scale(1.1);
     box-shadow:0 0 25px #FFBE0B,0 0 50px #FFBE0B;
 }
