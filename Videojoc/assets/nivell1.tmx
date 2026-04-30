@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="60" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="1">
  <tileset firstgid="1" name="TX Tileset Ground" tilewidth="32" tileheight="32" spacing="32" margin="32" tilecount="64" columns="8">
-  <image source="../../../../Users/polfe/Desktop/IOC POL FERRE/CURS 1 Realització de projectes multimèdia/Videojoc/assets/TX Tileset Ground.png" width="512" height="512"/>
+  <image source="../../../../../../../xampp/htdocs/Videojoc/assets/TX Tileset Ground.png" width="512" height="512"/>
   <tile id="0">
    <objectgroup>
     <object id="1" x="0" y="0" width="31" height="32"/>
@@ -324,10 +324,10 @@
   </tile>
  </tileset>
  <tileset firstgid="65" name="TX Village Props" tilewidth="32" tileheight="32" spacing="32" margin="32" tilecount="256" columns="16">
-  <image source="../../../../Users/polfe/Desktop/IOC POL FERRE/CURS 1 Realització de projectes multimèdia/Videojoc/assets/TX Village Props.png" width="1024" height="1024"/>
+  <image source="../../../../../../../xampp/htdocs/Videojoc/assets/TX Village Props.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="321" name="TX FX Torch Flame" tilewidth="32" tileheight="32" spacing="32" margin="32" tilecount="4" columns="2">
-  <image source="../../../../Users/polfe/Desktop/IOC POL FERRE/CURS 1 Realització de projectes multimèdia/Videojoc/assets/TX FX Torch Flame.png" width="128" height="128"/>
+ <tileset firstgid="321" name="TX FX Torch Flame" tilewidth="32" tileheight="32" spacing="32" margin="32" tilecount="256" columns="2">
+  <image source="../../../../../../../xampp/htdocs/Videojoc/assets/TX FX Torch Flame.png" width="128" height="128"/>
  </tileset>
  <layer id="1" name="Ground1" class="Floor" width="60" height="20">
   <data encoding="csv">
@@ -335,7 +335,7 @@
 31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,
 48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,
 190,190,190,190,190,190,190,190,190,190,190,190,190,190,321,322,321,322,321,322,0,0,0,0,0,0,0,0,0,0,322,321,322,321,322,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,
-190,190,190,190,190,190,190,190,190,190,190,190,190,190,323,324,323,324,323,324,0,0,0,0,0,0,0,0,0,0,324,323,324,323,324,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,
+190,190,190,190,190,190,190,190,190,190,190,190,190,190,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,
 190,190,190,190,190,190,190,190,190,190,190,190,190,190,0,0,0,0,0,0,0,0,0,15,15,15,0,0,0,0,0,0,0,0,0,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,
 190,190,190,190,190,190,190,190,190,190,190,190,190,190,0,0,0,0,0,0,0,0,0,24,24,24,0,0,0,0,0,0,0,0,0,0,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,
 190,190,190,190,190,190,190,190,190,190,190,190,190,190,0,0,0,0,0,0,13,13,0,0,0,0,0,13,13,0,0,0,0,0,0,0,0,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,190,

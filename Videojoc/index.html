@@ -2,18 +2,60 @@
 <html lang="ca">
 <head>
   <meta charset="UTF-8"/>
-  <title>CoinJump – SAFE RESTORE</title>
+  <title>CoinJump</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#111; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; }
+    #hud {
+      position:absolute;
+      top:0; left:50%;
+      transform:translateX(-50%);
+      width:800px;
+      pointer-events:none;
+      z-index:10;
+    }
+    #hud-box {
+      position:absolute;
+      top:10px; left:10px;
+      background:rgba(0,0,0,0.72);
+      padding:7px 14px 7px 10px;
+      border-radius:6px;
+      font-family:monospace;
+      font-size:17px;
+      color:#ffe000;
+      text-shadow:0 0 4px #000, 1px 1px 0 #000;
+      line-height:1.5;
+      display:none;
+    }
+    #hud-nivell {
+      position:absolute;
+      top:10px; right:10px;
+      background:rgba(0,0,0,0.72);
+      padding:7px 12px;
+      border-radius:6px;
+      font-family:monospace;
+      font-size:17px;
+      color:#ffe000;
+      text-shadow:0 0 4px #000, 1px 1px 0 #000;
+      display:none;
+    }
   </style>
 </head>
 <body>
+<div id="hud">
+  <div id="hud-box">
+    <div id="hud-monedes">Monedes: 0/5</div>
+    <div id="hud-punts">Punts: 0</div>
+  </div>
+  <div id="hud-nivell" id="hud-nivell">NIVELL 1</div>
+</div>
 <script>
 var W = 800, H = 500;
 var scoreGlobal = 0;
-
+var bgMusic = null;
+ 
 // ─────────────────────────────────────────────
 // BOOT
 // ─────────────────────────────────────────────
@@ -31,35 +73,75 @@ class BootScene extends Phaser.Scene {
 // ─────────────────────────────────────────────
 class LoadingScene extends Phaser.Scene {
   constructor() { super({key:'LoadingScene'}); }
- 
+
   preload() {
-    this.add.rectangle(W/2,H/2,W,H,0x080818);
-    if (this.textures.exists('logotip')) {
-      this.add.image(W/2,H/2-90,'logotip').setScale(0.28);
-    } else {
-      this.add.text(W/2,H/2-90,'COINJUMP',{fontSize:'32px',fill:'#ffdd44',fontFamily:'monospace'}).setOrigin(0.5);
+    // En preload es crea el visual i es carreguen assets.
+
+    this.add.rectangle(W/2,H/2,W,H,0x06060f);
+
+    // Estrelles
+    var sg = this.add.graphics();
+    sg.fillStyle(0xffffff,1);
+    for(var i=0;i<80;i++){
+      var sx=Phaser.Math.Between(0,W), sy=Phaser.Math.Between(0,H-50);
+      sg.fillRect(sx,sy,Math.random()<0.3?2:1,Math.random()<0.25?2:1);
     }
-    this.add.text(W/2,H/2+10,'Carregant...',{fontSize:'20px',fill:'#aaaacc',fontFamily:'monospace'}).setOrigin(0.5);
-    this.add.rectangle(W/2,H/2+60,402,22,0x222244);
-    var bar = this.add.rectangle(W/2-199,H/2+60,2,18,0x44aaff).setOrigin(0,0.5);
-    this.load.on('progress',function(v){ bar.width=398*v; });
+
+    // Terra
+    var gg = this.add.graphics();
+    for(var bx=0;bx<W;bx+=16){
+      gg.fillStyle(0x4a7c2f,1); gg.fillRect(bx,H-32,16,10);
+      gg.fillStyle(0x6b4226,1); gg.fillRect(bx,H-22,16,22);
+      gg.fillStyle(0x2a5010,1); gg.fillRect(bx,H-32,16,2);
+    }
+
+    // Logotip (ja carregat al BootScene)
+    if (this.textures.exists('logotip')) {
+      var logo = this.add.image(W/2, 145, 'logotip');
+      logo.setScale(520 / logo.width);
+    } else {
+      this.add.text(W/2,110,'COINJUMP',{fontSize:'36px',fill:'#ffdd44',fontFamily:'"Press Start 2P"',stroke:'#aa7700',strokeThickness:6}).setOrigin(0.5);
+    }
+
+    // Text carregant
+    this.add.text(W/2, H-102, 'CARREGANT...', {
+      fontSize:'8px', fill:'#6677cc', fontFamily:'"Press Start 2P"'
+    }).setOrigin(0.5);
+
+    // Barra de fons
+    var barBg = this.add.graphics();
+    barBg.fillStyle(0x111133,1); barBg.fillRect(W/2-202,H-82,404,24);
+    barBg.lineStyle(2,0x4444aa,1); barBg.strokeRect(W/2-202,H-82,404,24);
+    barBg.fillStyle(0xffdd44,1);
+    barBg.fillRect(W/2-218,H-82,14,24);
+    barBg.fillRect(W/2+204,H-82,14,24);
+
+    // Barra de progress
+    var barFill = this.add.graphics();
+    this.load.on('progress', function(v) {
+      barFill.clear();
+      var filledW = Math.floor(400 * v / 8) * 8;
+      for(var bx=0; bx<filledW; bx+=8){
+        barFill.fillStyle(bx < filledW*0.6 ? 0x2255ff : 0x44aaff, 1);
+        barFill.fillRect(W/2-200+bx, H-80, 7, 20);
+      }
+    });
+
     this.load.on('loaderror',function(f){ console.warn('No es pot carregar:',f.key); });
- 
+
     this.load.image('bg1','assets/nivell1.png');
     this.load.image('bg2','assets/nivell2.png');
     this.load.image('moneda','assets/moneda.png');
     this.load.image('bomba','assets/bomba.png');
- 
-    this.load.spritesheet('walk_r','assets/personatge_coinjump_caminant_dreta.png',
-      {frameWidth:640, frameHeight:376});
-    this.load.spritesheet('walk_l','assets/personatge_coinjump_caminant_esquerra.png',
-      {frameWidth:640, frameHeight:376});
-    this.load.spritesheet('jump_r','assets/personatge_coinjump_salt_dreta.png',
-      {frameWidth:640, frameHeight:376});
-    this.load.spritesheet('jump_l','assets/personatge_coinjump_salt_esquerra.png',
-      {frameWidth:640, frameHeight:376});
+    this.load.audio('snd_moneda','assets/moneda.mp3');
+    this.load.audio('snd_derrota','assets/derrota.mp3');
+    this.load.audio('snd_musica','assets/musica_retro_bucle.mp3');
+    this.load.spritesheet('walk_r','assets/personatge_coinjump_caminant_dreta.png',{frameWidth:640,frameHeight:376});
+    this.load.spritesheet('walk_l','assets/personatge_coinjump_caminant_esquerra.png',{frameWidth:640,frameHeight:376});
+    this.load.spritesheet('jump_r','assets/personatge_coinjump_salt_dreta.png',{frameWidth:640,frameHeight:376});
+    this.load.spritesheet('jump_l','assets/personatge_coinjump_salt_esquerra.png',{frameWidth:640,frameHeight:376});
   }
- 
+
   create() {
     this.anims.create({key:'anim_walk_r', frames:this.anims.generateFrameNumbers('walk_r',{start:0,end:6}), frameRate:10, repeat:-1});
     this.anims.create({key:'anim_walk_l', frames:this.anims.generateFrameNumbers('walk_l',{start:0,end:6}), frameRate:10, repeat:-1});
@@ -71,224 +153,178 @@ class LoadingScene extends Phaser.Scene {
 }
  
 // ─────────────────────────────────────────────
-// TÍTOL
+// TITOL
 // ─────────────────────────────────────────────
 class TitleScene extends Phaser.Scene {
   constructor() { super({key:'TitleScene'}); }
   create() {
     scoreGlobal = 0;
-    this.add.rectangle(W/2,H/2,W,H,0x080818);
-    if (this.textures.exists('logotip')) {
-      this.add.image(W/2,80,'logotip').setScale(0.25).setAlpha(0.9);
+    document.getElementById('hud-box').style.display='none';
+    document.getElementById('hud-nivell').style.display='none';
+
+    // Fons fosc gradient
+    this.add.rectangle(W/2,H/2,W,H,0x06060f);
+
+    // Estrelles
+    var sg = this.add.graphics();
+    sg.fillStyle(0xffffff,1);
+    for(var i=0;i<90;i++){
+      var sx=Phaser.Math.Between(0,W), sy=Phaser.Math.Between(0,H-60);
+      sg.fillRect(sx,sy,Math.random()<0.25?2:1,Math.random()<0.25?2:1);
     }
-    this.add.text(W/2,160,'SAFE RESTORE',{fontSize:'40px',fill:'#66aaff',fontFamily:'monospace',stroke:'#000033',strokeThickness:6}).setOrigin(0.5);
-    this.add.text(W/2,205,'CoinJump – Videojoc de plataformes',{fontSize:'14px',fill:'#7777aa',fontFamily:'monospace'}).setOrigin(0.5);
-    this.add.text(W/2,315,
-      'COM JUGAR\n\n\u2190 \u2192   Moures esquerra / dreta\n\u2191 o ESPAI   Saltar\n\n'+
-      'Recull monedes per guanyar punts\nEvita les bombes!\n\n'+
-      'Recull 5 monedes \u2192 Nivell 2\nRecull 8 monedes al N2 \u2192 Guanyes!',
-      {fontSize:'14px',fill:'#ccccee',fontFamily:'monospace',align:'center',lineSpacing:4}
-    ).setOrigin(0.5);
-    var btn = this.add.text(W/2,452,'[ PREM ESPAI PER JUGAR ]',{fontSize:'18px',fill:'#ffdd44',fontFamily:'monospace',stroke:'#443300',strokeThickness:3}).setOrigin(0.5);
-    this.tweens.add({targets:btn,alpha:0.1,duration:550,yoyo:true,repeat:-1});
+
+    // Terra pixelada a baix
+    var gg = this.add.graphics();
+    for(var bx=0;bx<W;bx+=16){
+      gg.fillStyle(0x4a7c2f,1); gg.fillRect(bx,H-40,16,12);
+      gg.fillStyle(0x6b4226,1); gg.fillRect(bx,H-28,16,28);
+      gg.fillStyle(0x2a5010,1); gg.fillRect(bx,H-40,16,2);
+    }
+    // Petits blocs decoratius sobre el terra
+    [80,200,350,500,650,750].forEach(function(bx){
+      gg.fillStyle(0x4a7c2f,1); gg.fillRect(bx,H-56,32,16);
+      gg.fillStyle(0x6b4226,1); gg.fillRect(bx,H-72,32,16);
+      gg.fillStyle(0x2a5010,1); gg.fillRect(bx,H-56,32,2);
+    });
+
+    // Logotip gran
+    if (this.textures.exists('logotip')) {
+      var logo = this.add.image(W/2, 130, 'logotip');
+      var targetW = Math.min(560, logo.width);
+      logo.setScale(targetW / logo.width);
+      this.tweens.add({targets:logo, y:136, duration:2000, yoyo:true, repeat:-1, ease:'Sine.easeInOut'});
+    } else {
+      this.add.text(W/2,100,'COINJUMP',{fontSize:'36px',fill:'#ffdd44',fontFamily:'"Press Start 2P"',stroke:'#aa7700',strokeThickness:6}).setOrigin(0.5);
+    }
+
+    // Subttol
+    this.add.text(W/2,248,'- VIDEOJOC DE PLATAFORMES -',{
+      fontSize:'7px',fill:'#5566aa',fontFamily:'"Press Start 2P"'
+    }).setOrigin(0.5);
+
+    // Instruccions en dues columnes en una caixa
+    var boxX=W/2, boxY=330;
+    this.add.rectangle(boxX,boxY,460,100,0x000000,0.55).setOrigin(0.5);
+    this.add.rectangle(boxX,boxY,460,100,0x2233aa,0).setOrigin(0.5);
+    // Linies de la caixa
+    var bg2 = this.add.graphics();
+    bg2.lineStyle(1,0x3344aa,0.8); bg2.strokeRect(boxX-230,boxY-50,460,100);
+    bg2.lineStyle(1,0x2233aa,0.4); bg2.strokeRect(boxX-228,boxY-48,456,96);
+
+    this.add.text(boxX-110, boxY-38,
+      '\u2190 \u2192   Moure\n\u2191 / ESPAI   Saltar',
+      {fontSize:'8px',fill:'#aabbdd',fontFamily:'"Press Start 2P"',lineSpacing:10}
+    ).setOrigin(0.5,0);
+    this.add.text(boxX+80, boxY-38,
+      '5 monedes \u2192 Nivell 2\n8 monedes \u2192 Guanyes!',
+      {fontSize:'8px',fill:'#aabbdd',fontFamily:'"Press Start 2P"',lineSpacing:10}
+    ).setOrigin(0.5,0);
+    // Separador vertical
+    bg2.lineStyle(1,0x3344aa,0.6); bg2.lineBetween(boxX,boxY-42,boxX,boxY+42);
+
+    // Boto parpellejant
+    var btn = this.add.text(W/2,447,'[ PREM ESPAI PER JUGAR ]',{
+      fontSize:'10px',fill:'#ffdd44',fontFamily:'"Press Start 2P"',stroke:'#553300',strokeThickness:3
+    }).setOrigin(0.5);
+    this.tweens.add({targets:btn,alpha:0.45,duration:1200,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
+
+    // Monedes que cauen millor: mes nombroses, rotacio, colors variats
     if (this.textures.exists('moneda')) {
       this.add.particles(0,0,'moneda',{
-        x:{min:0,max:W},y:-20,
-        scale:{start:0.09,end:0.02},alpha:{start:0.5,end:0},
-        speedY:{min:60,max:110},lifespan:4000,frequency:280,quantity:1
+        x:{min:0,max:W}, y:-16,
+        scale:{start:0.11,end:0.03},
+        alpha:{start:0.9,end:0},
+        speedY:{min:80,max:160},
+        speedX:{min:-20,max:20},
+        rotate:{min:0,max:360},
+        lifespan:3500,
+        frequency:180,
+        quantity:1
       });
     }
-    this.input.keyboard.once('keydown-SPACE',function(){
-      this.scene.start('Level1Scene');
-    },this);
+
+    startBgMusic(this);
+    this.input.keyboard.once('keydown-SPACE',function(){ this.scene.start('Level1Scene'); },this);
   }
 }
  
 // ─────────────────────────────────────────────
-// HELPER: plataformes
+// HELPERS COMPARTITS
 // ─────────────────────────────────────────────
+function startBgMusic(scene) {
+  if (bgMusic && bgMusic.isPlaying) return;
+  if (scene.cache.audio.exists('snd_musica')) {
+    bgMusic = scene.sound.add('snd_musica', {loop:true, volume:0.06});
+    bgMusic.play();
+  }
+}
+ 
 function buildPlatforms(scene, platData) {
   var group = scene.physics.add.staticGroup();
   platData.forEach(function(d) {
-    var cx = d[0], topY = d[1], pw = d[2];
-    var ph = 32;
-    var rect = scene.add.rectangle(cx, topY + ph/2, pw, ph, 0x5a3e1a, 0);
+    var rect = scene.add.rectangle(d[0], d[1]+16, d[2], 32, 0x5a3e1a, 0);
     scene.physics.add.existing(rect, true);
     group.add(rect);
   });
   return group;
 }
  
-// ─────────────────────────────────────────────
-// DADES PLATAFORMES NIVELL 1
-// ─────────────────────────────────────────────
-var PLAT1 = [
-  [960, 0, 1920],[960, 32, 1920],
-  [320, 96, 640],[1440, 96, 960],
-  [320, 128, 640],[1440, 128, 960],
-  [224, 160, 448],[784, 160, 96],[1520, 160, 800],
-  [224, 192, 448],[784, 192, 96],[1536, 192, 768],
-  [224, 224, 448],[672, 224, 64],[896, 224, 64],[1552, 224, 736],
-  [192, 256, 384],[1616, 256, 608],
-  [128, 288, 256],[608, 288, 64],[992, 288, 64],
-  [544, 352, 64],
-  [1504, 384, 64],
-  [240, 416, 32],[480, 416, 64],[1328, 416, 32],[1440, 416, 64],[1776, 416, 32],
-  [208, 448, 416],[704, 448, 320],[912, 448, 32],[1232, 448, 288],[1760, 448, 320],
-  [208, 480, 416],[704, 480, 320],[928, 480, 64],[1200, 480, 352],[1744, 480, 352],
-  [208, 512, 416],[704, 512, 320],[1232, 512, 288],[1536, 512, 64],[1760, 512, 320],
-  [208, 544, 416],[704, 544, 320],[1232, 544, 288],[1760, 544, 320],
-  [208, 576, 416],[704, 576, 320],[1232, 576, 288],[1760, 576, 320],
-  [208, 608, 416],[704, 608, 320],[1232, 608, 288],[1760, 608, 320],
-];
- 
-// ─────────────────────────────────────────────
-// DADES PLATAFORMES NIVELL 2
-// ─────────────────────────────────────────────
-var PLAT2 = [
-  [272, 64, 480],[1504, 64, 832],
-  [208, 96, 416],[768, 96, 64],[1504, 96, 832],
-  [192, 128, 384],[784, 128, 352],[1536, 128, 768],
-  [192, 160, 384],[784, 160, 352],[1568, 160, 704],
-  [176, 192, 352],[576, 192, 64],[1072, 192, 32],[1600, 192, 640],
-  [144, 224, 288],[1040, 224, 224],[1600, 224, 640],
-  [144, 256, 288],[512, 256, 64],[1600, 256, 640],
-  [464, 288, 32],[1376, 288, 64],[1552, 288, 224],[1840, 288, 160],
-  [448, 320, 64],[720, 320, 32],[912, 320, 160],[1376, 320, 64],[1552, 320, 224],[1840, 320, 160],
-  [848, 352, 288],
-  [192, 384, 64],[384, 384, 64],
-  [32, 416, 64],[192, 416, 64],[1184, 416, 64],[1856, 416, 64],
-  [160, 448, 320],[944, 448, 32],[1216, 448, 320],[1856, 448, 64],
-  [160, 480, 320],[1120, 480, 512],[1856, 480, 128],
-  [160, 512, 320],[432, 512, 32],[1216, 512, 320],[1728, 512, 64],[1888, 512, 64],
-  [160, 544, 320],[432, 544, 32],[1216, 544, 320],[1632, 544, 64],[1888, 544, 64],
-  [160, 576, 320],[1216, 576, 320],[1536, 576, 64],[1888, 576, 64],
-  [160, 608, 320],[1216, 608, 320],[1440, 608, 64],[1888, 608, 64],
-];
- 
-// ─────────────────────────────────────────────
-// MONEDES
-// ─────────────────────────────────────────────
-var COINS1 = [
-  [784,148],[544,340],[1504,372],
-  [240,404],[480,404],[1440,404],[1776,404],
-  [912,436],[208,436],[1232,436],
-];
-var COINS2 = [
-  [752,84],[560,180],[1072,180],
-  [496,244],[464,276],[432,308],
-  [720,308],[912,308],[848,340],
-  [176,372],[368,372],[1168,404],
-];
- 
-// ─────────────────────────────────────────────
-// BOMBES ESTÀTIQUES AMB PATRULLA (van i tornen 3 caselles = 96px)
-// Posades lluny del spawn, lluny de monedes, sobre plataformes sòlides
-// Format: { x, y, range }  (range=0 => estàtica)
-// ─────────────────────────────────────────────
-var BOMBS1 = [
-  // Plataforma gran esquerra (y=448, spawn x=208) – bomba a la dreta del spawn
-  { x:350,  y:430, range:96 },
-  // Plataforma gran central (y=448, x~704-1023)
-  { x:800,  y:430, range:96 },
-  // Plataforma gran dreta-mig (y=448, x~1232)
-  { x:1300, y:430, range:96 },
-  // Plataforma gran dreta (y=448, x~1760)
-  { x:1850, y:430, range:96 },
-  // Plataforma petita high (y=288, estàtica)
-  { x:608,  y:270, range:0  },
-];
- 
-var BOMBS2 = [
-  // Plataforma gran esquerra (y=448) – spawn N2 x=220, bomba lluny
-  { x:300,  y:430, range:96 },
-  // Plataforma gran dreta (y=448)
-  { x:1350, y:430, range:96 },
-  // Plataforma central alta (y=352)
-  { x:920,  y:334, range:96 },
-  // Plataforma dreta alta (y=320)
-  { x:1600, y:302, range:96 },
-];
- 
-// ─────────────────────────────────────────────
-// HELPER: crea bombes que patrullen horitzontalment
-// ─────────────────────────────────────────────
-function createPatrolBombs(scene, bombData) {
-  var list = [];
-  bombData.forEach(function(d) {
-    var b = scene.physics.add.image(d.x, d.y, 'bomba');
-    b.setScale(0.08).setDepth(8).setImmovable(true);
-    b.body.allowGravity = false;
-    b._startX = d.x;
-    b._range  = d.range;
-    b._speed  = (d.range > 0) ? 60 : 0;
-    b._dir    = 1;
-    list.push(b);
-  });
-  return list;
-}
- 
-// ─────────────────────────────────────────────
-// HELPER: personatge
-// ─────────────────────────────────────────────
 function createPlayer(scene, x, y) {
   var p = scene.physics.add.sprite(x, y, 'walk_r', 0);
   p.setScale(0.12);
   p.body.setSize(220, 300);
   p.body.setOffset(210, 40);
   p.setCollideWorldBounds(false).setBounce(0).setDepth(10);
-  scene.physics.world.setBoundsCollision(true, true, true, false);
+  // Desactivem col.lisio amb la part superior i inferior del mon
+  scene.physics.world.setBoundsCollision(true, true, false, false);
   p.play('anim_idle');
   return p;
 }
  
-// ─────────────────────────────────────────────
-// HELPER: lògica update moviment (compartida pels dos nivells)
-// ─────────────────────────────────────────────
+function createPatrolBombs(scene, bombData) {
+  return bombData.map(function(d) {
+    var b = scene.physics.add.image(d.x, d.y, 'bomba');
+    b.setScale(0.08).setDepth(8).setImmovable(true);
+    b.body.allowGravity = false;
+    // Reduim el hitbox de la bomba
+    b.body.setSize(200, 200);
+    b.body.setOffset(220, 160);
+    b._startX = d.x; b._range = d.range;
+    b._speed  = d.range > 0 ? 60 : 0; b._dir = 1;
+    return b;
+  });
+}
+ 
 function updatePlayer(scene) {
   var onGround = scene.player.body.blocked.down;
   var left  = scene.cursors.left.isDown;
   var right = scene.cursors.right.isDown;
-  var jump  = Phaser.Input.Keyboard.JustDown(scene.spaceKey) ||
-              Phaser.Input.Keyboard.JustDown(scene.cursors.up);
+  var jump  = Phaser.Input.Keyboard.JustDown(scene.spaceKey) || Phaser.Input.Keyboard.JustDown(scene.cursors.up);
  
   if (left) {
-    scene.player.setVelocityX(-200);
-    scene._lastDir = 'l';
-    if (onGround && scene.player.anims.currentAnim?.key !== 'anim_walk_l')
-      scene.player.play('anim_walk_l');
+    scene.player.setVelocityX(-200); scene._lastDir = 'l';
+    if (onGround && scene.player.anims.currentAnim?.key !== 'anim_walk_l') scene.player.play('anim_walk_l');
   } else if (right) {
-    scene.player.setVelocityX(200);
-    scene._lastDir = 'r';
-    if (onGround && scene.player.anims.currentAnim?.key !== 'anim_walk_r')
-      scene.player.play('anim_walk_r');
+    scene.player.setVelocityX(200); scene._lastDir = 'r';
+    if (onGround && scene.player.anims.currentAnim?.key !== 'anim_walk_r') scene.player.play('anim_walk_r');
   } else {
     scene.player.setVelocityX(0);
-    if (onGround && !scene._jumping &&
-        scene.player.anims.currentAnim?.key !== 'anim_idle')
-      scene.player.play('anim_idle');
+    if (onGround && !scene._jumping && scene.player.anims.currentAnim?.key !== 'anim_idle') scene.player.play('anim_idle');
   }
  
-  // Salt – només des de terra
   if (jump && onGround) {
-    scene.player.setVelocityY(-520);
-    scene._jumping = true;
+    scene.player.setVelocityY(-520); scene._jumping = true;
     scene.player.play(scene._lastDir === 'l' ? 'anim_jump_l' : 'anim_jump_r');
   }
  
-  // Aterratge
   if (!scene._wasOnGround && onGround) {
     scene._jumping = false;
     if (!left && !right) scene.player.play('anim_idle');
-    else if (left)       scene.player.play('anim_walk_l');
-    else                 scene.player.play('anim_walk_r');
+    else scene.player.play(left ? 'anim_walk_l' : 'anim_walk_r');
   }
   scene._wasOnGround = onGround;
 }
  
-// ─────────────────────────────────────────────
-// HELPER: actualitza patrulla bombes
-// ─────────────────────────────────────────────
 function updateBombs(bombList) {
   bombList.forEach(function(b) {
     if (!b.active || b._range === 0) return;
@@ -299,6 +335,104 @@ function updateBombs(bombList) {
   });
 }
  
+// HUD via DOM - completament fora de Phaser, sense problemes de zoom ni scroll
+var _hudMNeeded = 5;
+function createHUD(scene, nivell, mNeeded) {
+  _hudMNeeded = mNeeded;
+  document.getElementById('hud-box').style.display = 'block';
+  document.getElementById('hud-nivell').style.display = 'block';
+  document.getElementById('hud-monedes').textContent = 'Monedes: 0/' + mNeeded;
+  document.getElementById('hud-punts').textContent = 'Punts: ' + scoreGlobal;
+  document.getElementById('hud-nivell').textContent = 'NIVELL ' + nivell;
+  // Retornem objectes amb metode setText per compatibilitat amb el codi existent
+  var txtMonedes = { setText: function(t){ document.getElementById('hud-monedes').textContent = t; } };
+  var txtPunts   = { setText: function(t){ document.getElementById('hud-punts').textContent = t; } };
+  return {txtMonedes, txtPunts};
+}
+
+function updateHUD(scene) {}
+ 
+function mostrarMissatge(scene, text, cb) {
+  scene.add.rectangle(W/2,H/2,440,130,0x000000,0.88).setScrollFactor(0).setDepth(60);
+  scene.add.text(W/2,H/2,text,{fontSize:'19px',fill:'#fff',fontFamily:'monospace',align:'center',stroke:'#000',strokeThickness:3}).setOrigin(0.5).setScrollFactor(0).setDepth(61);
+  scene.time.delayedCall(2500,cb,[],scene);
+}
+ 
+// ─────────────────────────────────────────────
+// DADES MAPA
+// ─────────────────────────────────────────────
+ 
+// Nivell 1: eliminades les 2 files [960,0,1920] i [960,32,1920] que bloquejaven el cel
+var PLAT1 = [
+  [320,96,640],[1440,96,960],
+  [320,128,640],[1440,128,960],
+  [224,160,448],[784,160,96],[1520,160,800],
+  [224,192,448],[784,192,96],[1536,192,768],
+  [224,224,448],[672,224,64],[896,224,64],[1552,224,736],
+  [192,256,384],[1616,256,608],
+  [128,288,256],[608,288,64],[992,288,64],
+  [544,352,64],[1504,384,64],
+  [240,416,32],[480,416,64],[1328,416,32],[1440,416,64],[1776,416,32],
+  [208,448,416],[704,448,320],[912,448,32],[1232,448,288],[1760,448,320],
+  [208,480,416],[704,480,320],[928,480,64],[1200,480,352],[1744,480,352],
+  [208,512,416],[704,512,320],[1232,512,288],[1536,512,64],[1760,512,320],
+  [208,544,416],[704,544,320],[1232,544,288],[1760,544,320],
+  [208,576,416],[704,576,320],[1232,576,288],[1760,576,320],
+  [208,608,416],[704,608,320],[1232,608,288],[1760,608,320],
+];
+ 
+var PLAT2 = [
+  [272,64,480],[1504,64,832],
+  [208,96,416],[768,96,64],[1504,96,832],
+  [192,128,384],[784,128,352],[1536,128,768],
+  [192,160,384],[784,160,352],[1568,160,704],
+  [176,192,352],[576,192,64],[1072,192,32],[1600,192,640],
+  [144,224,288],[1040,224,224],[1600,224,640],
+  [144,256,288],[512,256,64],[1600,256,640],
+  [464,288,32],[1376,288,64],[1552,288,224],[1840,288,160],
+  [448,320,64],[720,320,32],[912,320,160],[1376,320,64],[1552,320,224],[1840,320,160],
+  [848,352,288],
+  [192,384,64],[384,384,64],
+  [32,416,64],[192,416,64],[1184,416,64],[1856,416,64],
+  [160,448,320],[944,448,32],[1216,448,320],[1856,448,64],
+  [160,480,320],[1120,480,512],[1856,480,128],
+  [160,512,320],[432,512,32],[1216,512,320],[1728,512,64],[1888,512,64],
+  [160,544,320],[432,544,32],[1216,544,320],[1632,544,64],[1888,544,64],
+  [160,576,320],[1216,576,320],[1536,576,64],[1888,576,64],
+  [160,608,320],[1216,608,320],[1440,608,64],[1888,608,64],
+];
+ 
+// Monedes nivell 1: [784,148] estava massa a prop del spawn (x=208,y~412)
+// La movem a [992,276] sobre la plataforma central alta i afegim [1504,340]
+var COINS1 = [
+  [544,340],[1504,372],
+  [680,404],[480,404],[1440,404],[1776,404],
+  [912,436],[1600,436],[1232,436],
+  [992,276],
+];
+ 
+var COINS2 = [
+  [752,84],[560,180],[1072,180],
+  [496,244],[464,276],[432,308],
+  [720,308],[912,308],[848,340],
+  [176,372],[368,372],[1168,404],
+];
+ 
+var BOMBS1 = [
+  {x:350, y:430, range:96},
+  {x:800, y:430, range:96},
+  {x:1300,y:430, range:96},
+  {x:1850,y:430, range:96},
+  {x:608, y:270, range:0 },
+];
+ 
+var BOMBS2 = [
+  {x:300, y:430, range:96},
+  {x:1350,y:430, range:96},
+  {x:920, y:334, range:96},
+  {x:1600,y:302, range:96},
+];
+ 
 // ─────────────────────────────────────────────
 // NIVELL 1
 // ─────────────────────────────────────────────
@@ -306,14 +440,9 @@ class Level1Scene extends Phaser.Scene {
   constructor() { super({key:'Level1Scene'}); }
  
   create() {
-    scoreGlobal = 0;
-    this.dead    = false;
-    this.won     = false;
-    this.mCount  = 0;
-    this.mNeeded = 5;
- 
+    scoreGlobal = 0; this.dead = false; this.won = false; this.mCount = 0; this.mNeeded = 5;
     var MAP_W = 60*32, MAP_H = 20*32;
-    this.physics.world.setBounds(0, 0, MAP_W, MAP_H);
+    this.physics.world.setBounds(0,0,MAP_W,MAP_H);
     this.physics.world.gravity.y = 600;
  
     if (this.textures.exists('bg1'))
@@ -322,87 +451,62 @@ class Level1Scene extends Phaser.Scene {
       this.add.rectangle(MAP_W/2,MAP_H/2,MAP_W,MAP_H,0x1a2a3a).setDepth(-10);
  
     this.platforms = buildPlatforms(this, PLAT1);
- 
-    this.player = createPlayer(this, 208, 448 - 300*0.12 - 5);
+    this.player    = createPlayer(this, 208, 448 - 300*0.12 - 5);
     this.physics.add.collider(this.player, this.platforms);
  
     this.monedes = this.physics.add.staticGroup();
-    COINS1.forEach(function(pos) {
-      this.monedes.create(pos[0],pos[1],'moneda').setScale(0.08).refreshBody();
-    }, this);
+    COINS1.forEach(function(pos){ var m=this.monedes.create(pos[0],pos[1],'moneda').setScale(0.14); m.body.setSize(m.width*0.08/0.14, m.height*0.08/0.14); m.refreshBody(); },this);
     this.physics.add.overlap(this.player, this.monedes, this.agafarMoneda, null, this);
  
-    // Bombes patrulla
     this.bombList = createPatrolBombs(this, BOMBS1);
-    var self = this;
-    this.bombList.forEach(function(b) {
-      self.physics.add.overlap(self.player, b, self.tocarBomba, null, self);
-    });
+    this.bombList.forEach(b => this.physics.add.overlap(this.player, b, this.tocarBomba, null, this));
  
-    // Camera
-    this.cameras.main.setBounds(0, 0, MAP_W, MAP_H);
-    this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+    this.cameras.main.setBounds(0,0,MAP_W,MAP_H);
+    this.cameras.main.startFollow(this.player,true,0.08,0.08);
     this.cameras.main.setZoom(1.5);
  
-    // HUD – setScrollFactor(0) fixa el text a la pantalla independentment de la camara
-    var hs = {fontSize:'16px',fill:'#fff',stroke:'#000',strokeThickness:3,fontFamily:'monospace'};
-    this.txtMonedes = this.add.text(10,10,'Monedes: 0/'+this.mNeeded,hs).setScrollFactor(0).setDepth(50);
-    this.txtPunts   = this.add.text(10,32,'Punts: 0',hs).setScrollFactor(0).setDepth(50);
-    this.add.text(W-10,10,'NIVELL 1',hs).setOrigin(1,0).setScrollFactor(0).setDepth(50);
+    var hud = createHUD(this,1,this.mNeeded);
+    this.txtMonedes = hud.txtMonedes; this.txtPunts = hud.txtPunts;
  
     this.cursors  = this.input.keyboard.createCursorKeys();
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this._lastDir     = 'r';
-    this._wasOnGround = false;
-    this._jumping     = false;
+    this._lastDir='r'; this._wasOnGround=false; this._jumping=false;
+ 
+    startBgMusic(this);
   }
  
   agafarMoneda(player, moneda) {
-    moneda.disableBody(true, true);
-    scoreGlobal += 10;
-    this.mCount++;
+    moneda.disableBody(true,true);
+    scoreGlobal += 10; this.mCount++;
     this.txtPunts.setText('Punts: '+scoreGlobal);
     this.txtMonedes.setText('Monedes: '+this.mCount+'/'+this.mNeeded);
- 
-    var em = this.add.particles(moneda.x,moneda.y,'moneda',{
-      speed:80,scale:{start:0.08,end:0},lifespan:400,quantity:5
-    }).setDepth(20);
+    if (this.cache.audio.exists('snd_moneda')) this.sound.play('snd_moneda',{volume:0.7});
+    var em = this.add.particles(moneda.x,moneda.y,'moneda',{speed:80,scale:{start:0.08,end:0},lifespan:400,quantity:5}).setDepth(20);
     this.time.delayedCall(800,function(){ if(em&&em.active)em.destroy(); });
- 
     if (this.mCount >= this.mNeeded) {
-      this.won = true;
-      scoreGlobal += 50;
-      this.mostrarMissatge('Nivell 1 superat!\n+50 punts\nPassant al Nivell 2...', function() {
-        this.scene.start('Level2Scene', {punts: scoreGlobal});
+      this.won = true; scoreGlobal += 50;
+      mostrarMissatge(this,'Nivell 1 superat!\n+50 punts\nPassant al Nivell 2...',function(){
+        this.scene.start('Level2Scene',{punts:scoreGlobal});
       });
     }
   }
  
   tocarBomba() {
     if (this.dead) return;
-    this.dead = true;
-    this.physics.pause();
-    this.player.setTint(0xff3333);
-    this.mostrarMissatge('BOOM! Has explotat!\nPunts: '+scoreGlobal, function() {
+    this.dead=true; this.physics.pause(); this.player.setTint(0xff3333);
+    if (this.cache.audio.exists('snd_derrota')) this.sound.play('snd_derrota',{volume:0.8});
+    mostrarMissatge(this,'BOOM! Has explotat!\nPunts: '+scoreGlobal,function(){
       this.scene.start('GameOverScene',{guanyat:false,punts:scoreGlobal,missatge:'bomba'});
     });
   }
  
   caureAlBuit() {
     if (this.dead) return;
-    this.dead = true;
-    this.physics.pause();
-    this.player.setTint(0x4444ff);
-    this.mostrarMissatge("Has caigut al buit!Un altre cop serà!\nPunts: "+scoreGlobal, function() {
+    this.dead=true; this.physics.pause(); this.player.setTint(0x4444ff);
+    if (this.cache.audio.exists('snd_derrota')) this.sound.play('snd_derrota',{volume:0.8});
+    mostrarMissatge(this,"Has caigut al buit!\nUn altre cop serà!\nPunts: "+scoreGlobal,function(){
       this.scene.start('GameOverScene',{guanyat:false,punts:scoreGlobal,missatge:'buit'});
     });
-  }
- 
-  mostrarMissatge(text, cb) {
-    this.add.rectangle(W/2,H/2,440,130,0x000000,0.88).setScrollFactor(0).setDepth(60);
-    this.add.text(W/2,H/2,text,{fontSize:'19px',fill:'#fff',fontFamily:'monospace',
-      align:'center',stroke:'#000',strokeThickness:3}).setOrigin(0.5).setScrollFactor(0).setDepth(61);
-    this.time.delayedCall(2500,cb,[],this);
   }
  
   update() {
@@ -410,6 +514,7 @@ class Level1Scene extends Phaser.Scene {
     updatePlayer(this);
     if (this.player.y > 20*32+50) this.caureAlBuit();
     updateBombs(this.bombList);
+    updateHUD(this);
   }
 }
  
@@ -418,77 +523,56 @@ class Level1Scene extends Phaser.Scene {
 // ─────────────────────────────────────────────
 class Level2Scene extends Phaser.Scene {
   constructor() { super({key:'Level2Scene'}); }
-  init(data) { if (data && data.punts) scoreGlobal = data.punts; }
+  init(data) { if (data&&data.punts) scoreGlobal=data.punts; }
  
   create() {
-    this.dead    = false;
-    this.won     = false;
-    this.mCount  = 0;
-    this.mNeeded = 8;
- 
-    var MAP_W = 60*32, MAP_H = 20*32;
-    this.physics.world.setBounds(0, 0, MAP_W, MAP_H);
-    this.physics.world.gravity.y = 600;
+    this.dead=false; this.won=false; this.mCount=0; this.mNeeded=8;
+    var MAP_W=60*32, MAP_H=20*32;
+    this.physics.world.setBounds(0,0,MAP_W,MAP_H);
+    this.physics.world.gravity.y=600;
  
     if (this.textures.exists('bg2'))
       this.add.image(MAP_W/2,MAP_H/2,'bg2').setDisplaySize(MAP_W,MAP_H).setDepth(-10);
     else
       this.add.rectangle(MAP_W/2,MAP_H/2,MAP_W,MAP_H,0x0a1a2a).setDepth(-10);
  
-    this.platforms = buildPlatforms(this, PLAT2);
- 
-    // Spawn N2: x=220 sobre plataforma esquerra (y=448), ben lluny de les bombes
-    this.player = createPlayer(this, 220, 448 - 300*0.12 - 5);
-    this.physics.add.collider(this.player, this.platforms);
+    this.platforms = buildPlatforms(this,PLAT2);
+    this.player    = createPlayer(this,220,448-300*0.12-5);
+    this.physics.add.collider(this.player,this.platforms);
  
     this.monedes = this.physics.add.staticGroup();
-    COINS2.forEach(function(pos) {
-      this.monedes.create(pos[0],pos[1],'moneda').setScale(0.08).refreshBody();
-    }, this);
-    this.physics.add.overlap(this.player, this.monedes, this.agafarMoneda, null, this);
+    COINS2.forEach(function(pos){ var m=this.monedes.create(pos[0],pos[1],'moneda').setScale(0.14); m.body.setSize(m.width*0.08/0.14, m.height*0.08/0.14); m.refreshBody(); },this);
+    this.physics.add.overlap(this.player,this.monedes,this.agafarMoneda,null,this);
  
-    // Bombes patrulla
-    this.bombList = createPatrolBombs(this, BOMBS2);
-    var self = this;
-    this.bombList.forEach(function(b) {
-      self.physics.add.overlap(self.player, b, self.tocarBomba, null, self);
-    });
+    this.bombList = createPatrolBombs(this,BOMBS2);
+    this.bombList.forEach(b => this.physics.add.overlap(this.player,b,this.tocarBomba,null,this));
  
-    // Camera
-    this.cameras.main.setBounds(0, 0, MAP_W, MAP_H);
-    this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+    this.cameras.main.setBounds(0,0,MAP_W,MAP_H);
+    this.cameras.main.startFollow(this.player,true,0.08,0.08);
     this.cameras.main.setZoom(1.5);
  
-    // HUD fixat a la pantalla
-    var hs = {fontSize:'16px',fill:'#fff',stroke:'#000',strokeThickness:3,fontFamily:'monospace'};
-    this.txtMonedes = this.add.text(10,10,'Monedes: 0/'+this.mNeeded,hs).setScrollFactor(0).setDepth(50);
-    this.txtPunts   = this.add.text(10,32,'Punts: '+scoreGlobal,hs).setScrollFactor(0).setDepth(50);
-    this.add.text(W-10,10,'NIVELL 2',hs).setOrigin(1,0).setScrollFactor(0).setDepth(50);
-    this.add.text(W/2,H-18,'Recull 8 monedes!',
-      {fontSize:'13px',fill:'#ffdd44',fontFamily:'monospace',stroke:'#000',strokeThickness:2}
-    ).setOrigin(0.5).setScrollFactor(0).setDepth(50);
+    var hud = createHUD(this,2,this.mNeeded);
+    this.txtMonedes=hud.txtMonedes; this.txtPunts=hud.txtPunts;
+    this.add.text(W/2,H-18,'Recull 8 monedes!',{fontSize:'13px',fill:'#ffdd44',fontFamily:'monospace',stroke:'#000',strokeThickness:2}).setOrigin(0.5).setScrollFactor(0).setDepth(50);
  
     this.cursors  = this.input.keyboard.createCursorKeys();
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this._lastDir     = 'r';
-    this._wasOnGround = false;
-    this._jumping     = false;
+    this._lastDir='r'; this._wasOnGround=false; this._jumping=false;
+ 
+    startBgMusic(this);
   }
  
-  agafarMoneda(player, moneda) {
-    moneda.disableBody(true, true);
-    scoreGlobal += 10; this.mCount++;
+  agafarMoneda(player,moneda) {
+    moneda.disableBody(true,true);
+    scoreGlobal+=10; this.mCount++;
     this.txtPunts.setText('Punts: '+scoreGlobal);
     this.txtMonedes.setText('Monedes: '+this.mCount+'/'+this.mNeeded);
- 
-    var em = this.add.particles(moneda.x,moneda.y,'moneda',{
-      speed:80,scale:{start:0.08,end:0},lifespan:400,quantity:5
-    }).setDepth(20);
+    if (this.cache.audio.exists('snd_moneda')) this.sound.play('snd_moneda',{volume:0.7});
+    var em=this.add.particles(moneda.x,moneda.y,'moneda',{speed:80,scale:{start:0.08,end:0},lifespan:400,quantity:5}).setDepth(20);
     this.time.delayedCall(800,function(){ if(em&&em.active)em.destroy(); });
- 
-    if (this.mCount >= this.mNeeded) {
-      this.won = true; scoreGlobal += 100;
-      this.mostrarMissatge('HAS GUANYAT!\n+100 punts\nPunts finals: '+scoreGlobal, function() {
+    if (this.mCount>=this.mNeeded) {
+      this.won=true; scoreGlobal+=100;
+      mostrarMissatge(this,'HAS GUANYAT!\n+100 punts\nPunts finals: '+scoreGlobal,function(){
         this.scene.start('GameOverScene',{guanyat:true,punts:scoreGlobal});
       });
     }
@@ -496,34 +580,28 @@ class Level2Scene extends Phaser.Scene {
  
   tocarBomba() {
     if (this.dead) return;
-    this.dead = true; this.physics.pause();
-    this.player.setTint(0xff3333);
-    this.mostrarMissatge('BOOM! Has explotat!\nPunts: '+scoreGlobal, function() {
+    this.dead=true; this.physics.pause(); this.player.setTint(0xff3333);
+    if (this.cache.audio.exists('snd_derrota')) this.sound.play('snd_derrota',{volume:0.8});
+    mostrarMissatge(this,'BOOM! Has explotat!\nPunts: '+scoreGlobal,function(){
       this.scene.start('GameOverScene',{guanyat:false,punts:scoreGlobal,missatge:'bomba'});
     });
   }
  
   caureAlBuit() {
     if (this.dead) return;
-    this.dead = true; this.physics.pause();
-    this.player.setTint(0x4444ff);
-    this.mostrarMissatge("Has caigut al buit! Un altre cop serà!\nPunts: "+scoreGlobal, function() {
+    this.dead=true; this.physics.pause(); this.player.setTint(0x4444ff);
+    if (this.cache.audio.exists('snd_derrota')) this.sound.play('snd_derrota',{volume:0.8});
+    mostrarMissatge(this,"Has caigut al buit!\nUn altre cop serà!\nPunts: "+scoreGlobal,function(){
       this.scene.start('GameOverScene',{guanyat:false,punts:scoreGlobal,missatge:'buit'});
     });
   }
  
-  mostrarMissatge(text, cb) {
-    this.add.rectangle(W/2,H/2,440,130,0x000000,0.88).setScrollFactor(0).setDepth(60);
-    this.add.text(W/2,H/2,text,{fontSize:'19px',fill:'#fff',fontFamily:'monospace',
-      align:'center',stroke:'#000',strokeThickness:3}).setOrigin(0.5).setScrollFactor(0).setDepth(61);
-    this.time.delayedCall(2500,cb,[],this);
-  }
- 
   update() {
-    if (this.dead || this.won) return;
+    if (this.dead||this.won) return;
     updatePlayer(this);
-    if (this.player.y > 20*32+50) this.caureAlBuit();
+    if (this.player.y>20*32+50) this.caureAlBuit();
     updateBombs(this.bombList);
+    updateHUD(this);
   }
 }
  
@@ -538,39 +616,24 @@ class GameOverScene extends Phaser.Scene {
     this.missatge = data ? (data.missatge||'bomba') : 'bomba';
   }
   create() {
+    if (bgMusic&&bgMusic.isPlaying) { bgMusic.stop(); bgMusic=null; }
+    document.getElementById('hud-box').style.display='none';
+    document.getElementById('hud-nivell').style.display='none';
     this.add.rectangle(W/2,H/2,W,H,0x060610);
     if (this.textures.exists('logotip'))
       this.add.image(W/2,72,'logotip').setScale(0.22).setAlpha(0.6);
     this.add.text(W/2,155,this.guanyat?'ENHORABONA!':'GAME OVER',{
-      fontSize:'44px',fill:this.guanyat?'#66ff88':'#ff4444',
-      fontFamily:'monospace',stroke:'#000',strokeThickness:6
+      fontSize:'22px',fill:this.guanyat?'#66ff88':'#ff4444',fontFamily:'"Press Start 2P"',stroke:'#000',strokeThickness:4
     }).setOrigin(0.5);
-    var subtext = this.guanyat ? 'Has completat els dos nivells!'
-      : (this.missatge==='buit' ? "Un altre cop serà!! \uD83D\uDE05" : 'Has tocat una bomba...');
-    this.add.text(W/2,215,subtext,{fontSize:'18px',fill:'#aaaacc',fontFamily:'monospace'}).setOrigin(0.5);
-    this.add.text(W/2,268,'Puntuaci\u00f3: '+this.punts,{
-      fontSize:'28px',fill:'#ffdd44',fontFamily:'monospace',stroke:'#443300',strokeThickness:4
-    }).setOrigin(0.5);
-    this.add.text(W/2,350,'POL FERR\u00c9 \u2013 CoinJump',{
-      fontSize:'14px',fill:'#444466',fontFamily:'monospace',align:'center'
-    }).setOrigin(0.5);
-    var btn = this.add.text(W/2,428,'[ ESPAI \u2013 Torna a jugar ]',{
-      fontSize:'18px',fill:'#66aaff',fontFamily:'monospace',stroke:'#000033',strokeThickness:3
-    }).setOrigin(0.5);
+    this.add.text(W/2,215,this.guanyat?'Has completat els dos nivells!':(this.missatge==='buit'?"Un altre cop serà!! \uD83D\uDE05":'Has tocat una bomba...'),
+      {fontSize:'18px',fill:'#aaaacc',fontFamily:'monospace'}).setOrigin(0.5);
+    this.add.text(W/2,268,'Puntuaci\u00f3: '+this.punts,{fontSize:'16px',fill:'#ffdd44',fontFamily:'"Press Start 2P"',stroke:'#443300',strokeThickness:3}).setOrigin(0.5);
+    this.add.text(W/2,350,'POL FERR\u00c9 \u2013 CoinJump',{fontSize:'14px',fill:'#444466',fontFamily:'monospace',align:'center'}).setOrigin(0.5);
+    var btn=this.add.text(W/2,428,'[ ESPAI \u2013 Torna a jugar ]',{fontSize:'10px',fill:'#66aaff',fontFamily:'"Press Start 2P"',stroke:'#000033',strokeThickness:2}).setOrigin(0.5);
     this.tweens.add({targets:btn,alpha:0.1,duration:600,yoyo:true,repeat:-1});
-    var eTex = this.guanyat
-      ? (this.textures.exists('moneda')?'moneda':null)
-      : (this.textures.exists('bomba')?'bomba':null);
-    if (eTex) {
-      this.add.particles(0,0,eTex,{
-        x:{min:0,max:W},y:-10,scale:{start:0.09,end:0},alpha:{start:0.7,end:0},
-        speedY:{min:60,max:130},lifespan:4000,
-        frequency:this.guanyat?200:600,quantity:1
-      });
-    }
-    this.input.keyboard.once('keydown-SPACE',function(){
-      scoreGlobal=0; this.scene.start('TitleScene');
-    },this);
+    var eTex=this.guanyat?(this.textures.exists('moneda')?'moneda':null):(this.textures.exists('bomba')?'bomba':null);
+    if (eTex) this.add.particles(0,0,eTex,{x:{min:0,max:W},y:-10,scale:{start:0.09,end:0},alpha:{start:0.7,end:0},speedY:{min:60,max:130},lifespan:4000,frequency:this.guanyat?200:600,quantity:1});
+    this.input.keyboard.once('keydown-SPACE',function(){ scoreGlobal=0; this.scene.start('TitleScene'); },this);
   }
 }
  
@@ -586,3 +649,4 @@ new Phaser.Game({
 </script>
 </body>
 </html>
+ 
